@@ -3,6 +3,8 @@
  *
  *  Created on: Jul 14, 2020
  *      Author: Tyler Davidson
+ *    Modified: Oct 11, 2020
+ * Modified by: Dreightyn Godfrey
  */
 #include "servo.h"
 
