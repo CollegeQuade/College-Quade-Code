@@ -1,8 +1,8 @@
 /*
  * buzzer.c
  *
- *  Created on: 2020Äê11ÔÂ1ÈÕ
- *      Author: LiChe
+ *  Created on: 2020Ã„Ãª11Ã”Ã‚1ÃˆÃ•
+ *      Author: Chengming Li
  */
 
 
