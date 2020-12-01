@@ -1,14 +1,5 @@
-/*
- * servo.c
- *
- *  Created on: Jul 14, 2020
- *      Author: Tyler Davidson
- *    Modified: Oct 11, 2020
- * Modified by: Dreightyn Godfrey
- */
 #include "servo.h"
-
-
+#include "buzzer.h"
 
 void stand_still(void)
 {
@@ -25,14 +16,19 @@ void stand_still(void)
 
 void walk(void)
 {
-    //swing & stance repeating sequence
+    // could put this in a for or while loop so it just loops for a certain # of steps then stops & goes back to main
 
+    //swing & stance repeating sequence
     //1. servo_elbow rotates "up" to get leg off ground
     //2. servo_shoulder rotates "forwards" so the leg reaches out in front of the servo
     //3. servo_elbow rotates "down" to set the leg back on the ground
     //4. servo_shoulder rotates backwards while leg is on the ground, pushing quade forward
     // trying to swing all legs back in smaller increments of 20-30 degrees to help it move forwards
 
+    int b = 2;     // idk what "b" should be to decrease buzzer volume a little each call
+    volatile uint32_t j=0;
+    while(j <8)    // this makes quade take 8*2=16 steps total before going back to main
+    {
     //step leg1 forward
     servo_write(k1,90);  //lift leg
     servo_write(h1,90);   //swing forward
@@ -43,7 +39,6 @@ void walk(void)
         servo_write(h2,180-90);  //swing 2 backwards a little
         servo_write(h3,0+70);   //swing 3 backwards a little
         servo_write(h4,90+50);  //swing 4 backwards a little
-
 
     //step leg2 forward
     servo_write(k2,90);  //lift leg
@@ -56,6 +51,8 @@ void walk(void)
         servo_write(h3,0+90);
         servo_write(h4,90+70);
 
+        adjust_buzzer(b);
+        j++;
     //step leg3 forward
     servo_write(k3,90);  //lift leg
     servo_write(h3,0);   //swing forward
@@ -77,7 +74,12 @@ void walk(void)
         servo_write(h2,180-70);
         servo_write(h3,0+50);
         servo_write(h4,90+30);
+
+        adjust_buzzer(b);
+        j++;
+    }
 }
+
 
 
 
