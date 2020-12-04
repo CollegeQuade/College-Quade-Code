@@ -1,16 +1,15 @@
 /*
  * pca.h
- *
- *  Created on: Nov 2, 2020
- *      Author: dre
+ * from pca9685.h
+ *  Created on: Jun 22, 2020
+ *      Author: Tyler Davidson
  */
 
 #ifndef PCA_H_
 #define PCA_H_
 
 #include "newI2C.h"
-// long list of defining most/all addresses in the PCA data sheet & replacing all "LEDx" with "SERVOx"
-// again copied from pca9685.h file given in class, but this is mainly addresses given in the data sheet
+// list of defining most/all addresses in the PCA data sheet & replacing all "LEDx" with "SERVOx"
 
 #define PRESCALER_50HZ  0x79
 
@@ -85,63 +84,7 @@
 #define     PCA_SERVO7_ON_H         0x23
 #define     PCA_SERVO7_OFF_L        0x24
 #define     PCA_SERVO7_OFF_H        0x25
-/*
-//SERVO8
-#define     PCA_SERVO8_BASE         0x26
-#define     PCA_SERVO8_ON_L         0x26
-#define     PCA_SERVO8_ON_H         0x27
-#define     PCA_SERVO8_OFF_L        0x28
-#define     PCA_SERVO8_OFF_H        0x29
 
-//SERVO9
-#define     PCA_SERVO9_BASE         0x2a
-#define     PCA_SERVO9_ON_L         0x2a
-#define     PCA_SERVO9_ON_H         0x2b
-#define     PCA_SERVO9_OFF_L        0x2c
-#define     PCA_SERVO9_OFF_H        0x2d
-
-//SERVO10
-#define     PCA_SERVO10_BASE        0x2e
-#define     PCA_SERVO10_ON_L        0x2e
-#define     PCA_SERVO10_ON_H        0x2f
-#define     PCA_SERVO10_OFF_L       0x30
-#define     PCA_SERVO10_OFF_H       0x31
-
-//SERVO11
-#define     PCA_SERVO11_BASE        0x32
-#define     PCA_SERVO11_ON_L        0x32
-#define     PCA_SERVO11_ON_H        0x33
-#define     PCA_SERVO11_OFF_L       0x34
-#define     PCA_SERVO11_OFF_H       0x35
-
-//SERVO12
-#define     PCA_SERVO12_BASE        0x36
-#define     PCA_SERVO12_ON_L        0x36
-#define     PCA_SERVO12_ON_H        0x37
-#define     PCA_SERVO12_OFF_L       0x38
-#define     PCA_SERVO12_OFF_H       0x39
-
-//SERVO13
-#define     PCA_SERVO13_BASE        0x3a
-#define     PCA_SERVO13_ON_L        0x3a
-#define     PCA_SERVO13_ON_H        0x3b
-#define     PCA_SERVO13_OFF_L       0x3c
-#define     PCA_SERVO13_OFF_H       0x3d
-
-//SERVO14
-#define     PCA_SERVO14_BASE          0x3e
-#define     PCA_SERVO14_ON_L        0x3e
-#define     PCA_SERVO14_ON_H        0x3f
-#define     PCA_SERVO14_OFF_L       0x40
-#define     PCA_SERVO14_OFF_H       0x41
-
-//SERVO15
-#define     PCA_SERVO15_BASE        0x42
-#define     PCA_SERVO15_ON_L        0x42
-#define     PCA_SERVO15_ON_H        0x43
-#define     PCA_SERVO15_OFF_L       0x44
-#define     PCA_SERVO15_OFF_H       0x45
-*/
 //ALL SERVO
 #define     PCA_ALL_SERVO_BASE      0xfa
 #define     PCA_ALL_SERVO_ON_L      0xfa
@@ -208,6 +151,6 @@
 
 
 void servo_write(uint8_t servo, uint8_t degrees);
-void pca9685_init(void);
+void pca_init(void);
 
 #endif /* PCA_H_ */

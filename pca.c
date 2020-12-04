@@ -1,14 +1,13 @@
 /*
  * pca.c
- *
- *  Created on: Nov 2, 2020
- *      Author: dre
+ * from pca9685.c
+ *  Created on: Jun 22, 2020
+ *      Author: Tyler
  */
-// copied most of this from pca9685.c file given in class
 // Configure PCA LED control registers LED0 - LED7 for 8 servos
 // PCA has a "control Register" that thats a pointer to which register will be accessed
 
-
+#include "math.h"
 #include "pca.h"
 
 //private functions
@@ -56,31 +55,7 @@ void servo_write(uint8_t servo, uint8_t degrees)
     case 7:
         servo = PCA_SERVO7_BASE;
         break;
- /* case 8:
-        servo = PCA_SERVO8_BASE;
-        break;
-    case 9:
-        servo = PCA_SERVO9_BASE;
-        break;
-    case 10:
-        servo = PCA_SERVO10_BASE;
-        break;
-    case 11:
-        servo = PCA_SERVO11_BASE;
-        break;
-    case 12:
-        servo = PCA_SERVO12_BASE;
-        break;
-    case 13:
-        servo = PCA_SERVO13_BASE;
-        break;
-    case 14:
-        servo = PCA_SERVO14_BASE;
-        break;
-    case 15:
-        servo = PCA_SERVO15_BASE;
-        break;
-*/   default:
+    default:
         assert(false);
     }
     // fill in the i2c_payload_struct by filling out function
@@ -117,8 +92,7 @@ void servo_write(uint8_t servo, uint8_t degrees)
 }
 
 
-
-void PCA_init(void)
+void pca_init(void)
 {
     //set PWM frequency     // how does this set the frequency?
     // each call of i2c_start writes data from array[2] to the PCA
@@ -129,7 +103,7 @@ void PCA_init(void)
     i2c_start(EUSCI_B0, PCA_ADDRESS, WRITE, array, 2, 0x00);
     i2c_start(EUSCI_B0, PCA_ADDRESS, WRITE, array, 2, 0x00);        // why is this one called twice?
 
-    array[0] = PCA_PRE_SCALE;             // PRE_SCALE = 0xfe
+    array[0] = PCA_PRE_SCALE;             // PRE_SCALE = 0xfe           ***PRE_SCALE = prescaler for PWM output frequency
     array[1] = PRESCALER_50HZ;            // PRESCALER_500HZ = 0x79
     i2c_start(EUSCI_B0, PCA_ADDRESS, WRITE, array, 2, 0x00);
 
@@ -139,20 +113,3 @@ void PCA_init(void)
 
 }
 
-
-
-
-
-/*
-void config_PCA(void)
-{
-    //SEND WHO AM I
-       uint8_t whoami;
-   // fill in the i2c_payload_struct by filling out function
-   // i2c_start(EUSCI_B_Type *i2c, uint8_t Address, bool RW, uint8_t *data, uint8_t dataBytes, uint8_t deviceReg)
-       i2c_start(EUSCI_B0, PCA_I2C_ADDRESS, READ, &whoami, 1, PCA_WHO_AM_I_REG);
-   //  i2c_start(EUSCI_B_Type *i2c, uint8_t Address, bool RW, uint8_t *data, uint8_t dataBytes, uint8_t deviceReg)
-       i2c_start(EUSCI_B0, PCA_I2C_ADDRESS, WRITE, array, 0x00);
-}
-
-*/

@@ -1,24 +1,31 @@
+/*
+ * main.c
+ *
+ *  Created on: Nov 30, 2020
+ *      Author: Dreightyn, Tommy, and Steven
+ */
+/* DriverLib Includes */
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-#include "msp.h"
-#include "i2c.h"
+/* Standard Includes */
+#include <stdint.h>
+#include <stdbool.h>
+
+#include <ti/devices/msp432p4xx/inc/msp.h>
+#include "newI2C.h"
 #include "pca.h"
 #include "servo.h"
-#include "buzzer.h"
-/**
- * main.c
- */
-volatile int state = 0; //start at standing
+#include "adc.h"
 
-void main(void)    //*from lab4 w/ i2c
+void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
     __disable_interrupt();
-   config_buzzer();           // Set up buzzer
-   config_buzzer_gpio();
+   config_adc();
    __enable_interrupt();
-
+   state = 0;
     I2C_OPEN_STRUCT_TypeDef i2c_open_struct;
-
+/*
        i2c_open_struct.uca10 = 0;                              //no self 10-bit Address
        i2c_open_struct.ucsla10 = 0;                      //PCA is 7-bit address, not 10
        i2c_open_struct.ucmm = 0;                               //No Multi-Controller
@@ -31,45 +38,76 @@ void main(void)    //*from lab4 w/ i2c
        //EUSCI_B0 uses P1.7 as SCL and P1.6 as SDA
        i2c_open(EUSCI_B0, &i2c_open_struct);
        pca_init(); //sets up PCA to output at the correct frequency
-
-       while(state==0)  //idle waiting:  light= dark
+*/
+   while(1)
+   {
+       while(state==0)  // idle state, waiting for an increase in light
        {
-           buzzer_stop();   // buzzer= off
+           // buzzer is off & theres no movement
            stand_still();
+           run_adc((double)normalizedADCRes);       // adc checking for increse in light
        }
-       // how to get from state0 to state1
-       // interrupt from light sensor, so probably set state=1 in the light senser IRQ Handler
-       // light sensor senses light. does it need to be a little or a lot of light?
-
+       //to get from state0 to state1: interrupt from light sensor sets state=1 in the IRQ Handler
        while(state==1)  // light= bright
        {
-         buzzer_start();   //  buzzer= on
+         int i;
+         for(i = 0; i<4; i++) //8 full steps forward
+         {
          walk();    //movement= walking
-
-         // ***** tried including "adjust_buzzer" in "walk" function,
-         //    decrease volume with every couple steps & keep track of # of steps in stead of time
-         state = 2;
+         }
+         // could put LED code here to light an LED before going back to state0
+         state = 0;
+         P1->OUT ^= 0x01;
        }
-       // how to get from state1 to state2
-       // something where the buzzer sound & movement speed decreases over a period of time? since quade should be "adjusting" to bright light
-
-       while(state==2) //idle done:  light= bright
-       {
-           buzzer_stop();   // buzzer= off
-           stand_still();
-       //quade should stay here infinitely while threes constant bright light
-       // go back to state 0 idle waiting if it gets dark again, maybe just a threshold for "dark"?
-        // if light sensor = dark
-        // state = 0;
-       }
+   }
 }
 
-/* Port1 ISR */              // this should be an interrupt triggered by a large increase in light
-void PORT1_IRQHandler(void){ // could also use interrupt for when light goes darkk again & set state==0
-    //Change State to walking
-    if(P1->IFG & BIT1)
+//![Single Sample Result]
+/* ADC Interrupt Handler. This handler is called whenever there is a conversion
+* that is finished for ADC_MEM0.
+*/
+void ADC14_IRQHandler(void)
+{
+    uint64_t status = MAP_ADC14_getEnabledInterruptStatus();
+    MAP_ADC14_clearInterruptFlag(status);
+    if (ADC_INT0 & status)
+    {
+        curADCResult = MAP_ADC14_getResult(ADC_MEM0);
+        normalizedADCRes = (curADCResult * 3.3) / 16384;
+
+        MAP_ADC14_toggleConversionTrigger();
+    }
+}//![Single Sample Result]
+
+
+/* Port5 ISR */
+void PORT5_IRQHandler(void)  // this interrupt causes the buzzer to sound, then sets state=1, which leads to walking
+{
+    int i;
+    if(ADCchange > 0.5)     // this triggers the buzzer to start, decrease, and stop
+    {
+        P2->DIR |= 0x0010;
         state = 1;
-        
-    P1->IFG &= ~BIT1;
+        dim = 1;
+        while(dim < 450)
+        {
+             if(dim < 250)
+             {
+                  dim++;
+             }
+             else
+             {
+                  dim+=2;
+             }
+             P2->OUT |= 0x0010;  // P2 Out turns the buzzer on & off
+             for(i = 0; i<dim; i++);
+             P2->OUT ^= 0x0010;
+             for(i = 0; i<dim; i++);
+             P2->OUT |= 0x0010;
+             for(i = 0; i<dim; i++);
+             }                          // after the buzzer stuff, quade starts moving
+             dim = 0;
+      }
+    P5->IFG &= ~BIT5;
 }
 
