@@ -2,7 +2,7 @@
  * pca.c
  * from pca9685.c
  *  Created on: Jun 22, 2020
- *      Author: Tyler
+ *      Author: Tyler and editted by Dreightyn
  */
 // Configure PCA LED control registers LED0 - LED7 for 8 servos
 // PCA has a "control Register" that thats a pointer to which register will be accessed
