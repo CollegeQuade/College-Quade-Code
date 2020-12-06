@@ -57,7 +57,7 @@ void main(void)
          }
          // could put LED code here to light an LED before going back to state0
          state = 0;
-         P1->OUT ^= 0x01;
+         P1->OUT ^= 0x01; //turns LED1 off
        }
    }
 }
@@ -78,36 +78,3 @@ void ADC14_IRQHandler(void)
         MAP_ADC14_toggleConversionTrigger();
     }
 }//![Single Sample Result]
-
-
-/* Port5 ISR */
-void PORT5_IRQHandler(void)  // this interrupt causes the buzzer to sound, then sets state=1, which leads to walking
-{
-    int i;
-    if(ADCchange > 0.5)     // this triggers the buzzer to start, decrease, and stop
-    {
-        P2->DIR |= 0x0010;
-        state = 1;
-        dim = 1;
-        while(dim < 450)
-        {
-             if(dim < 250)
-             {
-                  dim++;
-             }
-             else
-             {
-                  dim+=2;
-             }
-             P2->OUT |= 0x0010;  // P2 Out turns the buzzer on & off
-             for(i = 0; i<dim; i++);
-             P2->OUT ^= 0x0010;
-             for(i = 0; i<dim; i++);
-             P2->OUT |= 0x0010;
-             for(i = 0; i<dim; i++);
-             }                          // after the buzzer stuff, quade starts moving
-             dim = 0;
-      }
-    P5->IFG &= ~BIT5;
-}
-
