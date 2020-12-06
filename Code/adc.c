@@ -111,9 +111,9 @@ void config_adc(void)
 
 void run_adc(double ADC)  // most time is spent in this loop waiting for increase in light
 {
-    int i;
+    int i; //for the for loop
     MAP_PCM_gotoLPM0();
-    if(delay == 0)
+    if(delay == 0) //sets base voltage value for comparison every 50 cycles
     {
         prelightADC = ADC;
         delay = 50;
@@ -122,21 +122,21 @@ void run_adc(double ADC)  // most time is spent in this loop waiting for increas
     {
         delay--;
     }
-    ADCchange = ADC - prelightADC;
-    if(ADCchange > 0.03)     // this triggers the buzzer to start, decrease, and stop
+    ADCchange = ADC - prelightADC; //compares older and newer value
+    if(ADCchange > 0.1)     // this triggers the buzzer to start, decrease, and stop
     {
-        P2->DIR |= 0x0010;
-        P1->DIR |= BIT0;
-        P1->OUT |= BIT0;
-        state = 1;
-        dim = 1;
-        while(dim < 450)
+        P2->DIR |= 0x0010;//sets P2.1
+        P1->DIR |= BIT0;//sets LED1
+        P1->OUT |= BIT0;//turns LED1 on
+        state = 1; //turns idle mode off
+        dim = 1; //sets buzzer frequency delay
+        while(dim < 450) //sets buzzer time limit
         {
-             if(dim < 250)
+             if(dim < 250) //decreases frequency
              {
                   dim++;
              }
-             else
+             else//speeds up decrease in frequency
              {
                   dim+=2;
              }
@@ -148,9 +148,13 @@ void run_adc(double ADC)  // most time is spent in this loop waiting for increas
              for(i = 0; i<dim; i++);
         }                          // after the buzzer stuff, quade starts moving
         dim = 1;
-        delay = 0;
+        delay = 0; //resets base voltage
     }
 }
+
+
+
+
 
 
 
